@@ -1,2 +1,2 @@
 # R_projects
-This repository includes all R projects that I have completed over the past few years
+The "R_projects" folder is essentially a hub containing a record of my journey with R programming during my tenure as a student at Western Sydney University over the past two years. It's a compilation that embodies my progress and development in using R for various academic projects, spanning from data analysis to statistical modeling and more. Each project within this repository showcases not just my technical proficiency but also the practical application of R in addressing academic challenges. It's a testament to my learning, growth, and the diverse range of skills I've acquired while utilizing R for academic pursuits throughout my university experience.
