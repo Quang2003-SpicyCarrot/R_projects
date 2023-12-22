@@ -1,0 +1,654 @@
+---
+title: "Introduction to Data Science (Assignment 1)"
+author: "Quang Dong Nguyen"
+date: "2022-08-25"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Question 01- Regression
+
+```{r}
+library(r2symbols)
+kc <- read.csv("kc_house.csv")
+View(kc)
+head(kc)
+str(kc)
+
+```
+
+\newpage
+
+## 1) Construct the matrix plot and correlation matrix (consider only relevant variables). Comment on the relationship among variable
+
+```{r}
+#Matrix plot of relevant variables
+pairs(price ~ 
+      bedrooms + bathrooms + sqft_living  + sqft_lot + floors + sqft_living15 +sqft_lot15, 
+      data=kc, 
+      panel=panel.smooth) 
+
+```
+
+In the matrix plot of relevant variables, there are some observable positive linear trend between these following variables:
+
+-   price and bedrooms ; price and bathrooms; price and sqft_living; price and sqft_living15.
+
+-   bedroom and bathrooms; bedrooms and sqft_living; bedrooms and sqft_living15.
+
+-   bathrooms and sqft_living; bathrooms and sqft_living15.
+
+-   sqft_living and sqft_living15.
+
+There are also some negative trends in between some variables, but are not significantly big enough to consider a linear relationship between them.
+
+```{r}
+#Correlation matrix of relevant variables
+cor(kc[c(2,3,4,5,6,7,9,10)])
+
+```
+
+By assessing on the correlation between variables, we can see:
+
+-   A strong positive correlation price and sqft_living , price and sqft_living15; bathrooms and sqft_living.
+
+-   An intermediate positive correlation price and bathrooms; bedrooms and bathrooms, bedrooms and sqft_living; bathrooms and sqft_living15; sqft_living and sqft_living15.
+
+-   A weak positive correlation price and bedrooms; bedrooms and sqft_living15.
+
+\newpage
+
+## 2) Simple Linear Regression
+
+### i/ Fit a model to predict price in terms of sqft_living
+
+```{r}
+#shows first 6 elements of kc
+head(kc)
+nrow(kc) #population size is large enough to predict a model
+plot(price~sqft_living, data=kc)
+#the scatterplot seems to have a linear trend between the response variable (price)
+#and the explanatory variable (sqft_living)
+
+#Fit the model of price in terms of sqft_living
+model1 <- lm(price~sqft_living, data=kc)
+model1
+
+```
+
+The graph shows a sense of evidence of a linear relationship between the price variable and sqft_living
+
+<br>
+
+<br>
+
+### ii/ Discuss the significance of the slope parameter estimate. Write down the relevant hypothesis
+
+H0: B = 0. There is no evidence of a linear relationship between sqft_living and price
+
+HA: B != 0. There is evidence of a linear relationship between sqft_living and price
+
+```{r}
+summary(model1)
+```
+
+Based on summary made above about the linear model:
+
+-   P-value is significant, (p-value is less than 0.05)
+
+Therefore, there is a strong evidence to reject the null hypothesis at 5% level of significance, and support the alternative hypothesis: B != 0
+
+The slope estimate of the parameter is not equal to 0.
+
+There is a linear relationship between the two variables, which are price and sqft_living.
+
+<br>
+
+<br>
+
+### iii/ Discuss the accuracy of the parameter estimates. (Standard errors/ confidence intervals)
+
+```{r}
+summary(model1)
+
+```
+
+On average, the estimated value for the intercept can vary from the true value by 6.956 units.
+
+On average, the estimated value for the slope B of sqft_living can vary from its true value by 2.162 units.
+
+<br>
+
+```{r}
+#confidence interval:
+confint(model1, level=0.95)
+
+```
+
+Therefore, the confidence interval of the variable's coefficient shown its ranging of 95% CI is in between 46.70061 and 55.20429. Meaning on average, for each 1 unit increased in sqft_living will have the price in between 46.70061 and 55.20429. In other words, for each 1000 sq.ft increased in the square footage of the apartments interior living will have the price in between 46700.61 dollars and 55204.29 dollars
+
+For the intercept, in the absence of sqft_living variables in the parameter, the price will , on average, lay between -47.66432 and -20.30013 units on the level of confidence of 95% accurate. Meaning no money is charged when the sqft_living of the apartment's interior living space does not exist.
+
+<br>
+
+<br>
+
+### iv/ Discuss the model accuracy. (R-squared, residual standard error, etc)
+
+```{r}
+summary(model1)
+
+```
+
+Based on the parameter shown above, we see:
+
+-   p-value of sqft_living is significantly small (1.59e-06, less than 0.05) and its t-value is large, meaning there shown to have a linear relationship with the response variable(price).
+-   However the Residual Standard error is large (49.33 on 339 df), which explains the fan-shaped trend (meaning the scatterplot of the residual model explained later on, will spread out) when plotting.
+-   Multiple R-squared refers to 62% of the variance in the response variable (price) is explained by the model, supporting moderate linear relationship
+
+```{r}
+qf(0.95, 1, 339) #quantified value
+
+```
+
+-   F-statistic of the model1 is much larger than 3.869036. As a result, the model is appropriate, and between sqft_living and price, there is a significant linear relationship.
+
+Therefore, the model has shown the evidence of a linear trend among the response variable and the explanatory variable.
+
+```{r}
+anova(model1)
+
+```
+
+Based on the overall assess on the accuracy of the model, we observe:
+
+-   High sum of square suggests the high variability among the observations and their fitted model1; this also demonstrates the fan-shaped of the dataset when plotting it out in the residual vs fitted model as in the below section (v/ check for the model assumptions)
+
+<br>
+
+<br>
+
+### v/ Check for the model assumptions
+
+```{r}
+par(mfrow=c(2,2))
+plot(model1)
+
+```
+
+Assumption checking:
+
+-   In graph 1, the horizontal line is not straightly flat, it scales upward when the fitted value reaches approximately 350 on the x - axis. However, the residual equally scatters out, like a fan equally to both sides. Thus, it suggests that the error variances are not equal.
+-   Furthermore, in the scale-location plot, the standardised residuals seems to increase for every increasing in fitted values, which created the fan-shaped model.
+-   In the Q-Q plot: points don't lie on the straight line. Hence, the data does not meet the normality assumption
+
+<br>
+
+<br>
+
+### vi/ Write down the model equation
+
+```{r}
+model1
+
+```
+
+Therefore, the fitted model is:
+
+E(Y) = -33.98222 + 50.95245 \*sqft_living
+
+E(price) = -33.98222 + 50.95245\* sqft_living
+
+Where:
+
+-   price - measured in ten thousand dollars
+
+-   sqft_living - measured in thousand sq.ft
+
+<br>
+
+<br>
+
+### vii/ Predict the price of a house with 10,000 sq.ft of the apartments interior living space (sqft_living)
+
+```{r}
+predict(model1, newdata= data.frame(sqft_living = 10))
+
+```
+
+Hence, with a house of 10,000 sq.ft interior living space. The predicted price would be around 475.5423 (in ten thousand dollar). Meaning, the actual price would be 475.5423 \* 10,000 = 4,755,423 dollars.
+
+\newpage
+
+## 3) Multiple Linear Regression
+
+### i/ Fit a model to predict price in terms of all the other quantitative predictors (numerical predictors)
+
+```{r}
+str(kc) #to check all the quantitative predictors
+
+```
+
+All quantitative variables include: id, bedrooms, bathrooms, sqft_living, sqft_lot, floors, sqft_living15, sqft_lot15.
+
+```{r}
+#Fit the model price in terms of other quantitative predictors
+model3 <- lm(price~ .,data= kc)
+
+```
+
+<br>
+
+<br>
+
+### ii/ Remove the insignificant variables and fit a model including the rest of the variables
+
+```{r}
+summary(model3)
+```
+
+Some insignificant variables are:
+
+-   id: p-value is insignificant (0.3139, which is \>0.05) to fit the variable into the linear regression model.
+
+-   bathrooms: p-value is large (0.2484, which is \>0.05). Thus, it cannot fit into the multiple linear regression model.
+
+-   sqft_lot: p-value is insignificant (0.2663, which is \>0.05). Thus, the variable will be removed from the model.
+
+-   sqft_lot15: p-value is large (0.1189, which is \>0.05). Thus, it will be removed from the model.
+
+<br>
+
+Thus, the fitted model is shown as below:
+
+```{r}
+model4 <- lm(price~ sqft_living + floors + sqft_living15, data= kc)
+summary(model4)
+
+```
+
+<br>
+
+<br>
+
+### iii/ Add the Interaction term bedrooms\*floors to the model above (part ii)
+
+```{r}
+model5 <- lm(price~ 
+               sqft_living + floors + sqft_living15 + I(bedrooms*floors),
+             data=kc)
+
+```
+
+<br>
+
+<br>
+
+### iv/ Comment on the significance of the parameter estimates of the model above (part iii)
+
+```{r}
+summary(model5)
+
+```
+
+We do the hypothesis testing:
+
+-   H0 : Bi = 0. There is no evidence of linear relationship between the response variable and the explanatory variable
+
+-   HA: Bi != 0 . There is evidence of a linear relationship between the response variable and the explanatory variable
+
+With the interaction term bedrooms \* floors being added, the model become less accurate. As the interaction term along, though has a small std.error, it still has small t-value and its p-value is insignificant (0.19872, which is \>0.05).
+
+Therefore, there is enough evidence at 5% level of significance to not reject the null hypothesis. There is no evidence of a linear relationship between price and the interaction term of bedrooms\*floors.
+
+<br>
+
+<br>
+
+### v/ Check for the model assumptions (model in part iii)
+
+Model4's assumption checking:
+
+```{r}
+par(mfrow=c(2,2))
+plot(model4)
+
+```
+
+Model5's assumption checking:
+
+```{r}
+par(mfrow=c(2,2))
+plot(model5)
+
+```
+
+As we can observe from both plots a very similar trending between each graphs. In details:
+
+-   Homoscedasticity - both graphs also have a fan-shaped trend. Therefore, both model4 and model5 have their constant variance assumption not met the standard.
+
+-   Normality - Both graphs of Q-Q plot is not normal, the standardised residuals data tends to bends upward toward the end of the graph. This suggests both model4 and model5 are not normally distributed.
+
+-   In graph of the scale-location of both models, their standardised residuals increase as the fitted values increase, which supports the fan-shaped trend in the model.
+
+<br>
+
+<br>
+
+### vi/ Compare and comment on the accuracy of the models in part ii and part iii. Suggest the best model
+
+Final comparison:
+
+```{r}
+summary(model4)
+summary(model5)
+```
+
+Regarding to both model accuracy:
+
+-   Model4 has these following characteristics:
+
+    -   There are only 3 explanatory variables: sqft_living, floors +sqft_living15, but all 3 have low std.errors, large t-values and significant p-values (all the explanatory variables' p-value is smaller than 0.05)
+
+    -   For the parameter accuracy: RSE of the model is just a fraction higher than RSE of the model5. As well as for the Multiple R-squared, model5 has the variance in the response variable explained better only for a bit than model4's.
+
+    -   Multiple R-squared refers to 64.73% of the variation in the response variables is explained by the model, supporting adequate linear relationship
+
+-   Model5 has these following characteristics:
+
+    -   There are 4 explanatory variables to build up the fitted model; yet one variable unfitted into the model is the Interaction term of bedrooms\*floor, in which its p-value is insignificant, suggesting that there is no evidence of a linear relationship between the two X and Y variable
+
+    -   F-statistic of model5 is on a lower scale than the F-statistic of model4;
+
+    -   Multiple R-squared refers to 64.49% of the variation in the response variables is explained by the model.
+
+Hence, the better model of multiple regression is model4.
+
+<br>
+
+<br>
+
+### vii/ Fit a polynomial regression model to predict price using sqft_living of order 2 and test the model significance
+
+```{r}
+model6 <- lm(price ~ poly(sqft_living, 2), data=kc)
+pred_mod6 <- predict(model6)
+head(pred_mod6) #price prediction with 6 newdata on the fitted polynomial model.
+
+
+summary(model6)
+
+```
+
+We use hypothesis testing to test the model significance:
+
+-   H0: Bi = 0
+
+-   HA: Bi != 0
+
+By looking at the summary of the model, we observe the following characteristics of the parameters:
+
+-   std.errors of both of polynomial order 1 and 2 of the explanatory variables are quite strongly deviated (polynomial 1= 47.726 and polynomial 2 std.error = 47.726) from the average estimate coefficient.
+
+-   Both of polynomial of order 1 and 2 has large t-value (t-value of polynomial of order 1 = 24.363 and t-value of polynomial of order 2 = 4.914).
+
+-   Both p-values corresponding to the coefficient parameter of poly 1 and poly 2 are 2e-16 and 1.39e-06, which are smaller than 0.05 and are significantly small enough to reject the null hypothesis at 5% of the significance level. There is evidence of a linear relationship among the polynomial order in the explanatory variables with the explanatory variable (price).
+
+<br>
+
+```{r}
+#anova table to check overall of model significance:
+anova(model6)
+
+```
+
+By assessing on the model's overall accuracy, we observe:
+
+-   Extreme high value of sum of square, which suggests the high variability from the mean value of the linear model
+
+-   Significant p-value (2.2e-16\<0.05), meaning the model is accurately explained and strongly supporting strong linear relationship.
+
+-   Multiple R-squared refers 64.63% of the response variable's variation is moderately explained by the polynomial model, supporting moderate linear relationship
+
+```{r}
+qf(0.95,2,338)
+
+```
+
+-   Large F-statistic: 308 on 2 and 338 df, which is larger than 3.022441.
+
+\newpage
+
+# Question 02 - Classification
+
+Use the same data set.
+
+Create a new categorical variable "price_cat" by assigning value of "High" if price \> median(price) else "Low". Remove the variable price from the dataset.
+
+```{r}
+#QUESTION 2- CLASSIFCATION 
+kc <- read.csv("kc_house.csv")
+kc_cncat <- kc
+attach(kc_cncat)
+
+kc_cncat$price_cat[kc_cncat$price > median(kc$price)] <- "High"
+kc_cncat$price_cat[kc_cncat$price <= median(kc$price)] <- "Low"
+kc_cncat <- subset(kc_cncat, select= -price)
+str(kc_cncat$price_cat)
+
+```
+
+<br>
+
+<br>
+
+Divide the dataset into two sets namely training set and test set by assigning 75% of the observations to training set and the rest of the observations to the test set. (Hint Use set.seed(100) for reproducible results)
+
+```{r}
+set.seed(100)
+training_1 <- sample(1:nrow(kc_cncat), 256) #75% of observations
+head(training_1)
+
+```
+
+-   75% of the data frame containing 341 observations is 256 observations.
+
+\newpage
+
+## 1) Logistic Regression
+
+### i/ Construct Logistic regression model for "price_cat" in terms of all the other variables (Use training dataset)
+
+```{r}
+model7<- glm(as.factor(price_cat) ~ . ,
+             data=kc_cncat, subset=training_1,
+             family= binomial) # using the training set
+
+summary(model7)
+
+```
+
+<br>
+
+<br>
+
+### ii/ Comment on the significance of the parameter estimates
+
+We use hypothesis testing on the parameter estimates:
+
+-   H0: Bi = 0. There is no evidence of logistic relationship between the response variable with the explanatory variables
+
+-   HA: Bi != 0. There is evidence of logistic relationship between the response variable with the explanatory variables
+
+By testing the parameter significance, we can observe some unfitted variables within the parameter estimates with insignificant p-values, which suggests no logistic relationship between these variables with the response variable (price_cat), including:
+
+-   id: p-value of 0.708460, which is \>0.05.
+-   bedrooms: p-value of 0.960256 , which is \>0.05
+-   sqft_lot: p-value of 0.466618, which is \>0.05
+-   floors: p-value of 0.221906, which is \>0.05
+
+Hence, we will not reject these variables at 5% level of significance, there is strong evidence not to reject the null hypothesis. There is no evidence supporting the logistic relationship between these variables with the response variable (price_cat).
+
+Therefore, we can remove these insignificant variables to make the logistic model more fitting.
+
+<br>
+
+<br>
+
+### iii/ Improve the model based on the output in part i. (Hint Consider the significance of the parameter estimates)
+
+Thus, the improved logistic model based on the output in part ii/ is:
+
+```{r}
+model7<- glm(
+  as.factor(price_cat)~ bathrooms + sqft_living + waterfront + sqft_living15 + sqft_lot15, 
+  data=kc_cncat, 
+  subset= training_1,
+  family = binomial)
+
+summary(model7)
+
+```
+
+<br>
+
+<br>
+
+### iv/ Predict the outputs for the test dataset using the model in part iii and construct misclassification table
+
+```{r}
+#prediction of the output of the test dataset using model in part iii
+pred_prob <- predict(model7, 
+                     newdata = data.frame(kc_cncat[-training_1,]),
+                     type = "response")
+head(pred_prob)
+
+#Construct the misclassifcation table:
+pred_class <- rep(NA, nrow(kc_cncat[-training_1,]))
+length(pred_class) # the 25% data left from the dataset
+pred_class[pred_prob >= 0.5] <- "High"
+pred_class[pred_prob < 0.5] <- "Low"
+MisClass <- table( "Predicted" = pred_class , "Actual" = kc_cncat$price_cat[-training_1])
+
+MisClass # Misclassification table
+
+```
+
+<br>
+
+<br>
+
+### v/ Calculate the misclassification rate (Use test dataset)
+
+```{r}
+#The Misclassification rate using the test dataset:
+sum(MisClass[1,2], MisClass[2,1])/sum(MisClass)
+```
+
+This is a very high rate of misclassification for a test dataset.
+
+\newpage
+
+## 2) Decision Tree
+
+### i/ Build a classification tree model for the training dataset
+
+```{r}
+par(mfrow= c(1,1))
+library(tree)
+head(kc_cncat)
+tree_model1 <- tree(as.factor(price_cat)~ . , 
+                    data= kc_cncat,
+                    subset= training_1) #tree model using training dataset
+plot(tree_model1)
+text(tree_model1, pretty = 0)
+
+```
+
+<br>
+
+<br>
+
+### ii/ Use cross-validation and choose the best size for the tree part i
+
+```{r}
+cv_tree_model1 <- cv.tree(tree_model1, FUN = prune.misclass)
+names(cv_tree_model1)
+cv_tree_model1
+
+plot(cv_tree_model1$size , cv_tree_model1$dev , type = "b")
+
+```
+
+The graph demonstrates the estimated validation for different sizes of the tree model. And there is a sudden drop in between the size of 3 and 4 suggesting a huge improvement in the model size However, choosing beyond the size of 4 may lead to overfitting the model as we might try to fit every single observation into the model, which we would not want that but rather a simple generalised model for easier prediction and classification of data in the future.
+
+Therefore, the best model represented, is the cv_tree_model with the size of 3 as it has the greatest explanation for the variance in the dev, and is more representative of the change in variables.
+
+<br>
+
+<br>
+
+### iii/ Build the tree with the best size (pruning) obtained in part ii
+
+```{r}
+prune_tree_model1 <- prune.misclass(tree_model1, best = 3)
+plot(prune_tree_model1)
+text(prune_tree_model1, pretty = 0)
+
+```
+
+<br>
+
+<br>
+
+### iv/ Predict the outputs for the test dataset using the model in part iii and construct misclassification table
+
+```{r}
+pred_tree_model1 <- predict(prune_tree_model1, 
+                            newdata= data.frame(kc_cncat[-training_1,]),
+                            type = "class")
+head(pred_tree_model1)
+
+#misclass table:
+table("predicted_test" = pred_tree_model1, "actual" = kc_cncat$price_cat[-training_1])
+
+```
+
+<br>
+
+<br>
+
+### v/ Calculate the misclassification rate (Use test dataset)
+
+```{r}
+tab2 <- table("predicted_test" = pred_tree_model1, 
+              "actual" = kc_cncat$price_cat[-training_1])   
+Misclass_rate2 <- (tab2[1,2] + tab2[2,1])/sum(tab2)
+Misclass_rate2
+#lower misclassification rate
+
+```
+
+\newpage
+
+## 3) Compare the models in part 1 and part 2 and suggest the best model (Give reasons)
+
+Based on the dataset given that we have trained the model on with methods such as fitting model using Logistic regression methods or using Decisions tree method to suggest the best model. There are reasons suggesting why model 2 is more applicable and better:
+
+Models part 2 has lower Misclassfication rate than model part 1 (0.2352941 \< 0.7882353), suggesting the overall model in part 2 is accurate enough to give out high possibility rate of true results. Meanwhile the model in part 1 using logistic regression to approach price prediction, is less predictable
+
+However, Model part 2 which using the tree classification method, only has the sqft_living15 variable in its fitted tree model to predict the prices; while Model part 1 using logistic regression which fits multiple explanatory variable to predict the fittest response variable, which makes it more "reliable". Model part 1 is more accurate as though it has less corresponded dependent variables to predict the price.
+
+Therefore, model part 2 using the tree classification method to predict the 25% price from the test dataset is suggested to be better than model part 1
+
+<br>
+
+<br>
+
+# The end

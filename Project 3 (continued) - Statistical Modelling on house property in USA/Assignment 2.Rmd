@@ -1,0 +1,744 @@
+---
+title: "Introduction to Data Science (Assignment 2)"
+author: "Quang Dong Nguyen"
+date: "2022-09-27"
+output:
+  word_document: default
+---
+
+## Question 1 - Data Visualisation
+
+```{r}
+kc <- read.csv("kc_house2.csv")
+kc_second <- kc
+View(kc_second)
+head(kc_second)
+
+#Check the number of dimension of the dataset:
+dim(kc_second)
+
+# Varriable names check:
+names(kc_second)
+
+#Class check:
+str(kc_second)
+
+```
+
+### Use appropriate data visualisation techniques and comment on the association of the price of King County houses with other characteristics of the house.
+
+```{r}
+#Overall visualisation of the dataset kc_second
+kc_second$price_cat <-ifelse(kc_second$price_cat == "high", 1 , 0)
+pairs(kc_second[2:10], panel = panel.smooth)
+
+```
+
+<br>
+
+<br>
+
+```{r}
+#Correlation of price_cat with other characteristics of the house.
+cor(kc_second[2:10])
+
+```
+
+In correlation with the variable price_cat, it can be seen that between:
+
+-   price_cat and bedrooms: there is an moderately-weak, positive correlation
+
+-   price_cat and bathrooms: there is a moderate, positive correlation
+
+-   price_cat and sqft_living: there is a moderate, positive correlation
+
+-   price_cat and sqft_lot: there is a weak, negative correlation
+
+-   price_cat and floors: there is a moderately-weak, positive correlation
+
+-   price_cat and waterfront: there is a weak, positive correlation
+
+-   price_cat and sqft_living15 : there is a moderately-strong, positive correlation
+
+-   price_cat and sqft_lot15: there is a weak, negative correlation
+
+<br>
+
+<br>
+
+```{r}
+#Correlation results with graph:
+library(corrplot)
+corrplot(cor(kc_second[,2:10])
+         ,main = "Correlation results graph")
+
+```
+
+\newpage
+
+## Question 2 - Principal Component Analysis
+
+### a/ Calculate the mean and the variance for each appropriate variable and discuss if scaling is necessary and justify your findings.
+
+```{r}
+head(kc_second)
+sapply(kc_second[,c(-1,-10)], mean)
+
+```
+
+Mean calculation for appropriate variables, which include:
+
+-   Bedrooms, Bathrooms, Sqft_living, Sqft_lot, Floors, Waterfront, Sqft_living15, Sqft_lot.
+-   Variable such as: price_cat and id, are not appropriate to calculate mean.
+
+Among the mean of each variable, there are 2 distinct variables with higher mean than other variables, they are sqft_lot (24.7375941) and sqft_lot15(19.8577235); they are roughly ten times higher than other variables' mean value.
+
+<br>
+
+<br>
+
+```{r}
+#Calculating variance
+sapply(kc_second[,c(-1,-10)], var)
+
+```
+
+Variance calculation for appropriate variables, which include:
+
+-   Bedrooms, Bathrooms, Sqft_living, Sqft_lot, Floors, Waterfront, Sqft_living15, Sqft_lot.
+-   Variable such as: price_cat and id, are not appropriate to calculate variance.
+
+Among the variance of each variable, there are also two special variable which have unusual higher values than other variables, which are sqft_lot (3779.573196) and sqft_lot15 (12.993700862). Meanwhile, the other variables' variance remains low.
+
+<br>
+
+From the dataset, we observe sqft_lot and sqft_lot15 are distinctive to other variables as their mean is higher and their variance is much more bigger than other variables' mean and variance.
+
+-\> Therefore, scaling is proper, for generalising and narrowing the data into a more observable range. The next command *prcomp* in part b) will have the dataset scaled and will provide the model with a calculated standard deviation.
+
+<br>
+
+<br>
+
+### b/ Perform a Principal Component Analysis and give the principal component loadings.
+
+```{r}
+#b/
+PCA_scaled <- prcomp(kc_second[,2:10], scale. = TRUE) 
+
+#component loadings of each variables
+PCA_scaled$rotation
+
+```
+
+There are 8 principal components contributed by each following variables:
+
+-   Bedrooms, bathrooms, sqft_living, sqft_lot, floors, waterfront, sqft_living15, sqft_lot15
+-   Major contribution to each principal component is provided by:
+    -   PC1: bedrooms, bathrooms, sqft_living, sqft_living15, price_cat
+
+    -   PC2: sqft_lot, sqft_lot15
+
+    -   PC3: bedrooms and waterfront
+
+    -   PC4: floors and sqft_living15
+
+    -   PC5: bedrooms, floors, sqft_living15 and price_cat
+
+    -   PC6: bedrooms, sqft_living, sqft_living15 and price_cat
+
+    -   PC7: bedrooms, bathrooms and sqft_living15
+
+    -   PC8: sqft_lot and sqft_lot15
+
+    -   PC9: bathrooms and sqft_living
+
+<br>
+
+<br>
+
+### c/ Explain the proportion of variance explained by each principal component using a graph.
+
+```{r}
+#c/ 
+summary_PCA <- summary(PCA_scaled)
+summary_PCA
+
+```
+
+From the summary above, the first principal component explains most of the variation in the dataset (PC1: 38.01%), while the last principal component explains the least variation (2.103%). Each principal component has explained about:
+
+-   PC1: 38.01% of the total variation
+
+-   PC2: 17.68% of the total variation
+
+-   PC3: 12.99% of the total variation
+
+-   PC4: 9.464% of the total variation
+
+-   PC5: 6.889% of the total variation
+
+-   PC6: 4.628% of the total variation
+
+-   PC7: 4.22% of the total variation
+
+-   PC8: 4.015% of the total variation
+
+-   PC9: 2.103% of the total variation
+
+Cumulatively, the **first** and **second principal components** explain a total of 55.69% of the variation in the data. and so on, **until PC8,** where most of the variation (97.897%) in the data is explained.
+
+<br>
+
+Visualisation for the proportion of variance explained by each component.
+
+```{r}
+screeplot(PCA_scaled, 
+          xlab = "Principle Components",
+          main = "Screeplot of scaled kc_second data")
+
+```
+
+<br>
+
+<br>
+
+### d/ Write the first two principal components in terms of the original variables in the given dataset.
+
+First principal component in term of original variables:
+
+PC1 = -0.3609277 x *bedrooms* -0.4597545 x *bathrooms*
+
+-0.4822084 x *sqft_living* +0.1122122 x *sqft_lot*
+
+-0.2661610 x *floors* +0.0139074 x *waterfront*
+
+-0.4083281 x *sqft_living15* +0.1329041 x *sqft_lot15*
+
+-0.3972531 x *price_cat*
+
+<br>
+
+Second principal component in term of original variables:
+
+PC2 = -0.14452606 x *bedrooms* -0.10765695 x *bathrooms*
+
+-0.10561844 x *sqft_living* -0.69106266 x *sqft_lot*
+
+-0.04579729 x *floors* +0.02199295 x *waterfront*
+
+\- 0.04163799 x *sqft_living15* -0.68803886 x *sqft_lot15*
+
++0.03297068 x price_cat
+
+<br>
+
+<br>
+
+### e/ Construct the Biplot and interpret it.
+
+```{r}
+#e/
+par(mfrow = c(1,1))
+PCA_scaled$rotation <- -PCA_scaled$rotation
+PCA_scaled$x <- -PCA_scaled$x
+biplot(PCA_scaled, scale = 0, col = c(1,2) + 8, lwd = 2)
+
+```
+
+From the biplot, it can be seen that the first component loading vector (PC1) gives an equal weight on **bedrooms, bathrooms, sqft_living, sqft_living15** and **price_cat**, which are all larger than both **waterfront, sqft_lot** and **sqft_lot15**. Therefore, this suggests a corresponding measure between the households' interior design and living space, with the overall price (**price_cat)** of a house within King County, Washington States, USA.
+
+Meanwhile, the second loading vector (PC2) places most weight on **sqft_lot** and **sqft_lot15** than **waterfront** and **bedrooms, bathrooms, sqft_living,** **sqft_living15** and **price_cat**. This component corresponds to the measure of the overall exterior space of houses in King County, Washington State, USA.
+
+Furthermore, the loading vector **waterfront** tends to separate itself from other loading vectors.Graphically, **Waterfront** vector lies at 0 on both components.
+
+*Insight*:
+
+-   Houses with **greater interior design** (higher number of *bedrooms, bathrooms*) and **larger interior living space**, tend to possess **higher price**
+
+    -   Households on which lie on higher number of PC1, have **greater interior design** and **high price**. While houses on negative scale of PC1, have **less interior design** and **living space,** have **low price**.
+
+-   Houses with **great exterior living** **space** tends to have **lower price**
+
+    -   Households on which lie on higher number of PC2, have **greater exterior living** **space,** yet they have **lower price**
+
+-   While houses stay close to zero on both components have average level of exterior and interior living space
+
+\newpage
+
+## Question 3 - Clustering
+
+### a/ Cluster the 340 houses in King County in the given dataset into 2 groups using kmeans clustering.
+
+```{r}
+str(kc_second)
+#Question 3 - Clustering
+#a/
+kc_third <- kc_second[,c(-1,-10)]
+
+
+set.seed(4)
+kc_third_km <- kmeans(kc_third, centers = 2)
+pr_kc_third <- prcomp(kc_third, scale = TRUE)
+
+```
+
+<br>
+
+<br>
+
+### b/ Visually display the clusters using the first two principal components (PCs)
+
+```{r}
+#b/
+par(mfrow=c(1,1))
+plot(-pr_kc_third$x[,1:2], 
+     col = fitted(kc_third_km, "classes") + 1,
+     lwd = 2, 
+     main = "K-Means Clustering with K = 2")
+
+```
+
+This graph represents the two clusters using the first two principal components (PC1 and PC2)
+
+<br>
+
+<br>
+
+### c/ Cluster the 340 houses in King County in the given dataset into 2 groups using hierarchical clustering. Consider Euclidean distance as the dissimilarity measure and the closest distance between two clusters as the maximum distance between them.
+
+```{r}
+#c/
+hh <- hclust(dist(kc_third), method = "complete")
+hh
+cutree(hh, k = 2)# dividing dataset into 2 groups
+
+```
+
+<br>
+
+<br>
+
+### d/ Cluster the 340 houses in King County in the given dataset into 2 groups using hierarchical clustering. Consider Euclidean distance as the dissimilarity measure and the closest distance between two clusters as the average distance between them.
+
+```{r}
+#d/
+hh2 <- hclust(dist(kc_third), method = "average")
+hh2
+cutree(hh2, k = 2)# dividing dataset into 2 groups
+
+```
+
+<br>
+
+<br>
+
+### e/ Cluster the 340 houses in King County in the given dataset into 2 groups using hierarchical clustering. Consider Euclidean distance as the dissimilarity measure and the closest distance between two clusters as the minimum distance between them.
+
+```{r}
+#e/
+hh3 <- hclust(dist(kc_third), method = "single")
+hh3
+cutree(hh3, k = 2) # dividing dataset into 2 groups
+
+```
+
+<br>
+
+<br>
+
+### f/ Visually display the clusters obtained in part c , d and e using the first two principal components (PCs).
+
+```{r}
+#f/
+par(mfrow = c(1,1))
+plot(-pr_kc_third$x[,1:2], 
+     col = cutree(hh, k = 2) + 1, 
+#k = 2 because we want two  cluster
+     lwd = 2,
+     main = "Complete link analysis")
+
+```
+
+The **cluster graph** above, represents the **hierarchical cluster** data in **part c)** throughusing the first two principal components.
+
+<br>
+
+<br>
+
+```{r}
+plot(-pr_kc_third$x[,1:2], 
+     col = cutree(hh2, k = 2) + 1, 
+#k = 2 because we want two  cluster
+     lwd = 2,
+    main = "Average link analysis")
+
+```
+
+The **cluster graph** above, represents the **hierarchical cluster** data in **part d)**throughusing the first two principal components.
+
+<br>
+
+<br>
+
+```{r}
+plot(-pr_kc_third$x[,1:2], 
+     col = cutree(hh3, k = 2) + 1,
+#k = 2 because we want two  cluster
+     lwd = 2,
+    main = "Single link analysis")
+
+```
+
+This is the **cluster graph** above, represents the **hierarchical cluster** data in **part e)**throughusing the first two principal components.
+
+<br>
+
+<br>
+
+### g/ Compare the results in part b, f and comment on your findings.
+
+It can be observed from the graphs in part b) and part f) that:
+
+-   There are two groups of cluster (red and green).
+
+-   Each point belongs to a cluster and no observation is in more than one cluster.
+
+    -   In part f), the graph representing the hierarchical clustering data in part c) shows the two clusters (shown by red and green clusters), where the Euclidean distance between points in each cluster is maximised (or complete linkage).
+
+    -   In part f), the graph representing the hierarchical clustering data in part d) shows the two clusters (shown by red and green clusters), where the Euclidean distance between points in each cluster is average (or average linkage).
+
+    -   In part f), the graph representing the hierarchical clustering data in part e) shows the two clusters (shown by red and green clusters), where the Euclidean distance between points in each cluster is minimised (or Single linkage).
+
+-   Meanwhile, the **k-means clustering results graph in part b)** shares a similarity in cluster grouping with **the graph representing hierarchical cluster data in part c)**. There is only one clustering point in the **hierarchical graph** that is different from from the **k-means clustering graph**, which is near 3 on the y-axis and -1 on the x-axis.
+
+-   Overall, the other 2 hierarchical graphs have different looks from the k-means clustering results graph, there are much more "red" cluster points than the "green" cluster points.
+
+    -   The red cluster in the hierarchical cluster graph with the average linkage, is dominant over the green cluster.
+    -   Meanwhile, the red cluster in the hierarchical cluster graph with single linkage, is over-dominant over the green cluster. There are not much green points presenting on the graph.
+
+<br>
+
+*Further insights:*
+
+```{r}
+K1 <- cutree(hh, k = 2)
+K2 <- cutree(hh2, k = 2)
+K3 <- cutree(hh3, k = 2)
+```
+
+We can compare whether the cluster actually grouped the data correctly with the true price (price_cat) in the dataset kc:
+
+```{r}
+#k- means clustering with k = 2
+table(actual = kc$price_cat,cluster= kc_third_km$cluster)
+```
+
+-   As it can be seen that using the hierarchical cluster with complete linkage, there are mixture of high and low observations in 1 and a few in cluster group 2.
+
+<br>
+
+<br>
+
+```{r}
+#Hierarchical clustering with complete linkage
+table(actual = kc$price_cat,cluster= K1)
+
+```
+
+-   As same as for k-means clustering table, it can be seen that using the hierarchical cluster with complete linkage, there are mixture of high and low observations in 1 and a few in cluster 2. But there is one observation in cluster group 1, in variable "low", which belongs to cluter group 2.
+
+<br>
+
+<br>
+
+```{r}
+#Hierarchical clustering with average linkage
+table(actual = kc$price_cat,cluster= K2)
+
+```
+
+-   As same as for k-means clustering table, it can be seen that using the hierarchical cluster with complete linkage, there are mixture of high and low observations in 1 and a few in cluster group 2.
+
+<br>
+
+<br>
+
+```{r}
+#hierarchical cluster with single linkage
+table(actual = kc$price_cat,cluster= K3)
+
+```
+
+-   As same as for k-means clustering table, it can be seen that using the hierarchical cluster with complete linkage, there are mixture of high and low observations in 1 and a few in cluster group 2.
+
+-\> In assumption , clustering methods have not done well in classifying whether data has a low price or high price.(*Further insight:* This is because normally we don't have a response variable to start with in unsupervised learning. Therefore, using true **price_cat** variable to compare with the clustering data as how it is done above, is just an alternative approach to [ensure whether clustering method is accurate to be used to predict the low and price of each house in kc_house dataset)]{.underline}.
+
+\newpage
+
+## Question 4 - Support Vector Machines
+
+### a/ Divide the dataset into two sets namely training set and test set by assigning 75% of the observations to training set and the rest of the observations to the test set.
+
+```{r}
+#Question 4 -Support Vector Machines
+str(kc_second)
+
+#a/ 
+set.seed(1)
+kc_second$price_cat <- ifelse(kc_second$price_cat == 1, "high", "low")
+s <- sample(1:nrow(kc_third), 255) #340 * 75% = 255
+train_set <- kc_second[s,] #75% of data
+test_set <- kc_second[-s,] #the other 25% of data 
+
+```
+
+Dataset is requested to be aggregated into 75% of the observations for training set and the other 25% of the observations is for test set
+
+-   The data set of kc_house2, which assigned under the value of kc_second, has 340 observations, which means 75% of 340 observations is 255, and the rest is 85 observations which bears 25% of the overall observations in the data set.
+
+<br>
+
+<br>
+
+### b/ Fit a support vector classifier, in order to classify whether a house has high or low price. [Hint: Clearly report the cross-validation errors associated with different values of this parameter].
+
+```{r}
+library(e1071)
+svm1 <- svm(as.factor(price_cat) ~ 
+            bedrooms + bathrooms + sqft_living + sqft_lot + floors
+            + waterfront + sqft_living15 + sqft_lot15,
+            data= train_set,
+            kernel = "linear", 
+            cost = 1,
+            scale = TRUE)
+summary(svm1)
+
+```
+
+-   The fitted model is supported with linear SVM-Kernel function along with the cost of 1.
+
+-   There are total of 107 support vectors (54 support vectors are from one class and 53 support vectors are from the other).
+
+-   And the number of class is 2 with 2 levels: High and Low, which used to predict price_cat.
+
+<br>
+
+<br>
+
+```{r}
+set.seed(1)
+tune1 <- tune(svm, as.factor(price_cat) ~
+                   bedrooms + bathrooms + sqft_living + sqft_lot + floors
+                   + waterfront + sqft_living15 + sqft_lot15,
+                   data = train_set,
+                   kernel = "linear",
+                   ranges = list(cost = c(0.001,0.01,0.1,1,10,100,100)),
+                   scale = TRUE)
+summary(tune1)
+
+
+bestmod1 <- tune1$best.model
+summary(bestmod1)
+```
+
+Set.seed() function is needed to set a fixed tuning value, due to vary changes in dataset division and selection when tuning function without set.seed.
+
+By assessing the above summary, the optimal model is achieved when the sampling method is 10-fold cross-validation and the cost is 0.1. Because when the cost is 1, the minimum validation error is gained (0.1729231).
+
+-\> Therefore, the fittest model, using **linear kernel**, is obtained when **the cost is 0.1**. And the fittest model consists of **123 support vectors** and 62 from one class and 61 from the other class
+
+<br>
+
+<br>
+
+Thus, we are then using the fittest model obtained from the previous method, to predict test set and calculation the mis-classification rate:
+
+```{r}
+#Misclassification rate of test set for model 1
+test_pred1 <- predict(tune1$best.model, newdata= test_set)
+misclass_table1 <- table(test_pred1, test_set[,"price_cat"])
+mis_rate1 <- (misclass_table1[1,2] + misclass_table1[2,1])/sum(misclass_table1)
+mis_rate1
+
+```
+
+<br>
+
+<br>
+
+### c/ Fit a support vector machine with polynomial basis kernels, in order to classify whether a house has high or low price. [Hint: Clearly report the cross-validation errors associated with different values of this parameter.].
+
+```{r}
+svm2 <- svm(as.factor(price_cat) ~ 
+              bedrooms + bathrooms + sqft_living + sqft_lot + floors
+            + waterfront + sqft_living15 + sqft_lot15,
+            data= train_set,
+            kernel = "polynomial", 
+            cost = 1,
+            scale = TRUE)
+summary(svm2)
+
+```
+
+-   The fitted model is supported with polynomial kernel, with the cost of 1, the degree of 3 and coefficient of 0.
+
+-   There is a total of 174 support vectors (88 support vectors are from one class and 86 are from the other).
+
+-   And the number of class is 2 with 2 levels: High and Low, which used to predict price_cat.
+
+<br>
+
+<br>
+
+```{r}
+set.seed(1)
+tune2 <- tune(svm, as.factor(price_cat) ~
+                bedrooms + bathrooms + sqft_living + sqft_lot + floors
+              + waterfront + sqft_living15 + sqft_lot15,
+              data = train_set,
+              kernel = "polynomial",
+              ranges = list(cost = c(0.001,0.01,0.1,1,10,100,100)),
+              scale = TRUE)
+
+summary(tune2)
+
+
+bestmod2 <- tune2$best.model
+summary(bestmod2)
+
+```
+
+Set.seed() function is needed to set a fixed tuning value for the model.
+
+By assessing the above summary, the optimal model is achieved when the sampling method is 10-fold cross validation, the cost is 10 and the degree is 3, from which the lowest validation error is obtained (0.06740342).
+
+-\> Therefore, the best model, supported by **polynomial kernel,** is obtained when **the cost is 10** and having the **degree of 3** and **coefficient of 0**. Thus, the fittest model consists of **134 support vectors** and 66 from one class and 68 from the other class.
+
+<br>
+
+<br>
+
+Then, we are using the fittest model obtained from the previous method, to predict test set and calculation the mis-classification rate:
+
+```{r}
+#Misclassification rate of test set for model 2
+test_pred2 <- predict(tune2$best.model, newdata= test_set)
+misclass_table2 <- table(test_pred2, test_set[,"price_cat"])
+mis_rate2 <- (misclass_table2[1,2] + misclass_table2[2,1])/sum(misclass_table2)
+mis_rate2
+
+```
+
+<br>
+
+<br>
+
+### d/ Fit a support vector machine with radial basis kernels, in order to classify whether a house has high or low price. [Hint: Clearly report the cross-validation errors associated with different values of this parameter.].
+
+```{r}
+svm3 <- svm(as.factor(price_cat) ~ 
+              bedrooms + bathrooms + sqft_living + sqft_lot + floors
+            + waterfront + sqft_living15 + sqft_lot15,
+            data= train_set,
+            kernel = "radial", 
+            cost = 1,
+            scale = TRUE)
+summary(svm3)
+
+```
+
+-   The fitted model is supported with radial kernel, with the cost of 1.
+
+-   There is a total of 139 support vectors (68 support vectors are from one class and 71 support vectors are from the other).
+
+-   And the number of class is 2 with 2 levels: High and Low.
+
+<br>
+
+<br>
+
+```{r}
+set.seed(1)
+tune3 <- tune(svm, as.factor(price_cat) ~
+                bedrooms + bathrooms + sqft_living + sqft_lot + floors
+              + waterfront + sqft_living15 + sqft_lot15,
+              data = train_set,
+              kernel = "radial",
+              ranges = list(cost = c(0.001,0.01,0.1,1,10,100,100)),
+              scale = TRUE)
+
+summary(tune3)
+
+
+bestmod3 <- tune3$best.model
+summary(bestmod3)
+
+```
+
+Same reason as above when creating a support vector machine model , Set.seed() function is needed to set a fixed tuning value for the model.
+
+By assessing the above summary, the optimal model is achieved when the sampling method is 10-fold cross validation, with the cost of 1. So the corresponding minimum validation error is 0.1887692
+
+-\> Therefore, the best model when using **radial kernel** is obtained when **the cost is 1**, in which a **total number of support vectors is 139** (68 support vectors from one class and 71 support vectors from the other class).
+
+<br>
+
+<br>
+
+Then, again we are using the fittest model obtained from the previous method, to predict test set and calculation the mis-classification rate:
+
+```{r}
+#Misclassification rate of test set for model 3
+test_pred3 <- predict(tune3$best.model, newdata= test_set)
+misclass_table3 <- table(test_pred3, test_set[,"price_cat"])
+mis_rate3 <- (misclass_table3[1,2] + misclass_table3[2,1])/sum(misclass_table3)
+mis_rate3
+
+```
+
+<br>
+
+<br>
+
+### e/ Comment on the prediction accuracy of the model in part b, c and d. Hence suggest the best model with clear justification.
+
+In [part b:]{.underline}
+
+-   The optimal model (using [linear]{.underline} kernel) is achieved with the cost of 0.1, and with the minimum error rate of 0.1729231.
+
+-   There are 123 support vectors used: 62 support vectors are from one class and 61 support vectors are from the other.
+
+-   The misclassification rate when using on test_set is: 0.1764706.
+
+In [part c:]{.underline}
+
+-   The optimal model (using [polynomial]{.underline} kernel) is achieved with the cost of 10, degree of 3, coefficient 0, and with the minimum error rate of 0.2156923.
+
+-   There are 134 support vectors used: 66 support vectors are from one class and 61 support vectors are from the other.
+
+-   The misclassification rate when using on test_set is: 0.2.
+
+In [part d:]{.underline}
+
+-   The optimal model (using [radial]{.underline} kernel) is achieved with the cost of 1, and with the minimum error rate of 0.1887692.
+
+-   There are 139 support vectors used: 68 support vectors are from one class and 71 support vectors are from the other.
+
+-   The misclassification rate when using on test_set is: 0.1764706
+
+In comparison, it can be seen that the optimal model in part b) has the same misclassification rate as the optimal model in part d) (= 0.1764706), when testing on the test_set data by using the training model created in each part.
+
+However, During the validation of training error, using 10-fold cross validation, the model part b) has smaller validation error than the optimal model part d):
+
+-   Validation error of the optimal model in part b): 0.1729231
+
+-   Validation error of the optimal model in part d): 0.1887692
+
+In conclusion, it is suggested that best using the **model in part b)**, where **linear kernel** is used and has the **cost of 0.1,** to predict new data in the future.
+
+<br>
+
+<br>
+
+# - The End -
