@@ -1,9 +1,7 @@
-by Quang Dong Nguyen.  
+by Quang Dong Nguyen  
 provided by: Western Sydney University
 
-# Topic: Construct statistical models in R using both Regression and Classification models to compare the price of house in the US
-
-
+# Topic: Construct statistical models in R using both Regression and Classification models to compare the price of house in the US  
 ## Regression (Part i)
 1. Construct the matrix plot and correlation matrix (consider only relevant variables).Comment on the relationship among variable
 
@@ -46,6 +44,6 @@ Use the same dataset we perform:
 5. Calculate the misclassification rate (use test dataset)
 
 
-## Comparison
+## Comparison (Part iii)
 
 ### Question 1: Compare the models in part i and part ii and suggest the best model (Give reasons)

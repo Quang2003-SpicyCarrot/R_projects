@@ -1,3 +1,6 @@
+by: Quang Dong Nguyen, and et.al  
+provided by: Western Sydney University
+
 # Project Tasks - Social Web Analysis
 
 To get started, pick a topic that interests you, something you'd like to explore throughout

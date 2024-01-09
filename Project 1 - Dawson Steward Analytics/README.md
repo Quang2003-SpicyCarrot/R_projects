@@ -1,4 +1,8 @@
-# Project Tasks - Dawson Steward Analytics
+by: Quang Dong Nguyen  
+provided by: Western Sydney University
+
+# Project Tasks - Dawson Steward Analytics  
+
 Your company, Dawson Steward Analytics, a consultancy firm specialised in AI analytics is tasked by a
 retail chain in the northern hemisphere to analyse their sales data. The data are contained in three different
 sets:  
@@ -34,7 +38,7 @@ store cities: data containing the city, type and size information of the stores
 
 
 ---
-# Your tasks are:
+# Your tasks are:  
 1. Write the code to compute the total revenue of each store at the end of each day. Is there a noted
 difference between the days? Write also the code to calculate the total revenue over the seven day
 period. Plot the latter on a graph.  
