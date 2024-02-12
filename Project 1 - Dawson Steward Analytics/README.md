@@ -1,6 +1,10 @@
-by: Quang Dong Nguyen  
+by: [QuangDongNguyen](https://github.com/Quang2003-SpicyCarrot)  
 provided by: Western Sydney University
 
+![banner](GitImage/Dawson.png)
+
+![R Version](https://img.shields.io/badge/R%20version-4.2+.10%2B-lightblue)
+![Type of Study](https://img.shields.io/badge/Type%20of%20Study-Data%20Analytics-red)
 # Project Tasks - Dawson Steward Analytics  
 
 Your company, Dawson Steward Analytics, a consultancy firm specialised in AI analytics is tasked by a

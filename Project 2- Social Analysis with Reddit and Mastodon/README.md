@@ -1,27 +1,28 @@
-by: [QuangDongNguyen](https://github.com/Quang2003-SpicyCarrot), and others.  
+by: [QuangDongNguyen](https://github.com/Quang2003-SpicyCarrot) and et,al.  
 provided by: Western Sydney University
 
 
 
 ![banner](GitImage/SocialMedia.png)
-![Type of ML](https://img.shields.io/badge/Type%20of%20ML-Binary%20Classification-red)
+![Type of study](https://img.shields.io/badge/Type%20of%20Study-Study%20of%20Social%20Web-red)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Quang2003-SpicyCarrot/R_projects)
 ![License](https://img.shields.io/badge/Western%20Sydney%20University-WSU-darkred)
 ![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
 
 
 
-# Key findings: Perform a social media analysis and find any related trends of topics or users and insights on the social media platforms (Mastodon and Reddit)
+# Key findings: Perform a social media analysis to find any related trend of topics or users on the social media platforms (Mastodon and Reddit)
 
-# Table of Contents:
+## Table of Contents:
 - [Problems](#problems)
 - [Data Source](#data-source)
 - [Library used](#library-used-in-r)
-- [Methods]()
-- Few glances at the Results:
+- [Methods](#method)
+- [Quick review of the results](#quick-review-of-the-results)
+- [Explore the notebook](#explore-the-notebook)
 
 
-# Problems:
+## Problems:
 To get start, I will pick a topic of my interests that I would like to explore through the entire project. This is a group project, hence I collaborated with other
 3 student members to work throughout the whole project.
 
@@ -33,7 +34,7 @@ investigate more on the relevant R functions and the data structure.
 - Some research/preparation into downloaded data organisation is required, as data
 frames usually contain one or more columns of interest to select and filter on.  
 
-## Question 1:
+### Question 1:
 1. Using Reddit API, identify the relevant thread URL's for your chosen topic. Focus
 on either weekly or monthly timeframe.  
 
@@ -47,7 +48,7 @@ a word cloud for each thread.
 addressed in each of the three thread.  
 
 
-## Question 2:
+### Question 2:
 - Combine all the threads collected in question 1 and create a column to label
 them with their thread number.
 
@@ -65,7 +66,7 @@ of correctly identifying clusters. Did it effectively identify the clusters?
 
 
 
-## Question 3:
+### Question 3:
 - Use all thread URLs on Reddit that is identified in question 1.
 
 - Test if there exists a linear relationship between the number of comments in threads
@@ -73,14 +74,14 @@ and their corresponding dates. Note: remember to convert dates to a date format.
 
 
 
-## Question 4:
+### Question 4:
 - Retrieve the content of the top thread identified in question 1.
 
 - Test whether the number of comments on a thread is equally likely on each day.
 
 
 
-## Question 5:
+### Question 5:
 - Using Mastodon, identify users who are related to mychosen topic.
 
 - Identify the top five most active users, based on the highest number of statuses
@@ -99,15 +100,15 @@ having no friends.
 Note 2: If I downloaded fewer than 50 followers or friends for certain users that is completely acceptable.
 
 
-## Question 6:
+### Question 6:
 Find the most central users in the graph using all centrality measures and comments on the findings.
 
 
-# Data Source:
+## Data Source:
 - [Reddit APis: RedditExtractoR](https://cran.r-project.org/web/packages/RedditExtractoR/RedditExtractoR.pdf)
 - [Mastodon APis: rtoot](https://cran.r-project.org/web/packages/rtoot/index.html)
 
-# Library used in R:
+## Library used in R:
 - RedditExtractoR (APIs)
 - kableExtra
 - tm
@@ -117,9 +118,18 @@ Find the most central users in the graph using all centrality measures and comme
 - rtoot (APIs)
 
 
-# Method:
+## Method:
 - Text Mining
 - TF-IDF (Term Frequency - Invert Document Frequency)
 - K-means Clustering
 - Network Graph (Directed and undirected graph), Centrality (Degree, Closeness, Betweeness Centrality)
 - Chi-squared test
+
+
+## Quick review of the results: 
+![img_thread1](GitImage/WordCloud_thread2_Project2.png)
+![img_thread2](GitImage/K-Mean_TDM_CosineDistance.png)
+![img_thread3](GitImage/K-Mean_k3.png)
+
+## Explore the notebook
+To explore the notebook file: [R_file](https://github.com/Quang2003-SpicyCarrot/R_projects/blob/main/Project%202-%20Social%20Analysis%20with%20Reddit%20and%20Mastodon/Assignment1.R)
