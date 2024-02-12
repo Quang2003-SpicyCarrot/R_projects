@@ -90,7 +90,7 @@ during the period.
 - Data Manipulation and Data Cleaning (Transforming, NA removing, etc.)
 - Data Visualisation (interactive and non-interactive (required some R packages))
 - Hypothesis testing (general correlation test)
-- Regression Analysis
+- Predictive analysis
 
 
 
