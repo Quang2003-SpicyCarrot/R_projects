@@ -9,20 +9,21 @@ provided by: Western Sydney University
 
 # Projects: Busines Analysis with Dawson Steward Analytics
 ## Table of Contents:
-- [Business Overview](#business-overview-dawson-steward---data-consultancy-firm)
-- [Dataset](#dataset)
-- [Business Problem](#business-problem)
-- [Library](#library)
-- [Steps Summary](#steps-summary)
-- [Quick glance at the results](#quick-glance-at-the-results)
+- [I. Business Overview](#business-overview-dawson-steward---data-consultancy-firm)
+- [II. Dataset](#dataset)
+- [III. Business Problem](#business-problem)
+- [IV. Library used in R](#iv-library-used-in-r)
+- [V. Method](#v-method)
+- [VI. Steps Summary](#vi-steps-summary)
+- [VII. Quick glance at the results](#vii-quick-glance-at-the-results)
 
 
-## Business Overview: Dawson Steward - Data Consultancy Firm
+## I. Business Overview: Dawson Steward - Data Consultancy Firm
 Your company, Dawson Steward Analytics, a consultancy firm specialised in AI analytics is tasked by a
 retail chain in the northern hemisphere to analyse their sales data. 
 
 
-## Dataset:
+## II. Dataset:
 The data are provided by the business and are contained in three different sets:
 sales: daily sales data over a seven day period, containing the following columns:  
 - store id – the unique identifier of a store  
@@ -55,7 +56,7 @@ store cities: data containing the city, type and size information of the stores
 - city id  
 
 
-## Business problem:  
+## III. Business problem:  
 1. Question 1
 - Compute the total revenue of each store at the end of each day.
 - Is there a noted difference between the days? 
@@ -82,11 +83,11 @@ during the period.
 - Analyse the effectiveness of the promotion on the sales of the products.  
 
 
-## Library used in R
+## IV. Library used in R
 - tidyverse
 - kableExtra
 
-## Method:
+## V. Method:
 - Data Manipulation and Data Cleaning (Transforming, NA removing, etc.)
 - Data Visualisation (interactive and non-interactive (required some R packages))
 - Hypothesis testing (general correlation test)
@@ -94,7 +95,7 @@ during the period.
 
 
 
-## Steps summary:
+## VI. Steps summary:
 ```
 Question 1:
 |- import libraries
@@ -178,9 +179,63 @@ Question 4:
 |- Visualise Sales trends accross seven-day period by each promotion type, and shares my understanding of the impact of promotions over sales.
 
 ```
+
+
+## VII. Quick glance at the results:
+**Visualisation of total revenue obtained by each store over seven-day period.**
 ![img1](GitImage/TotalRevenue_7days_eachstore.png)
 
 
-## Quick glance at the results:
+**Correlation between store size and revenue.**
+![img2](GitImage/Store_sizeandRevenue.png)
+- During the assessment of data, we have been asked to show assess the relationship between the store_size and revenue. It is commonly believed that
+during a bull market, the size of shop correlates with the gain in revenue. The bigger a shop is, the more profitable it will become. 
+    - A reasonable explanation could be customer could get most of items on their wishlist without travelling to multiple different stores. 
+    - One-stop shopping - The ability to shop for multiple brands of items and services, including foods, entertainments, etc.
+    - Secured environment results in feeling of safety and comfort while shopping.
+
+Based on the correlation test, The result is shown below:  
+
+| Correlation test             |Score           |
+|------------------------------|----------------|
+|Correlation coeff             |0.701293        |
+|Confidence Interval (95%)     |0.60-0.77       |
+|no.observations               |128             | 
+|p-value                       |<0.05           |  
+
+There is sufficient evidence to conclude there is a linear relationship between store_size and revenue at 5% significance level. Meaning it is noticeable that when a shop size is increased,
+the profit margin will also stagnate.
+
+To further assess on the type of relationship between store_size and revenue, a linear model is established on data:
+
+| Linear model                 |Score           |
+|------------------------------|----------------|
+|Store_Size (p-val)            |<2e-16          |
+|Store_size (std.error)        |8.117           |
+|RSE                           |124 on 126 df   |
+|Adjusted R-squared            |0.4878          |  
+
+Based on the p-value of the model, there is a linear relationship between Store_size and revenue. However, since, RSE (residual standard error) is high,
+and R-square is moderately low (~48%), meaning only 48% of the variance in the response variable (revenue) is explained. This means the data is linear and fan-shaped.
+
+*Lesson learned and recommendation*
+- Based on the result of the linear model, Store size is one of the most predictive features in determining the growth of business' revenue. Other features, for example, City, Promotion are also helpful.
+- To improve the linear model, a transformation process with log function could be implemented into the model to reduce variance in the data (the fan-like shape of data)
+
+
+**Number of promotions used over the past 7 days.**
+![img3](GitImage/promotionaccross7day.png)  
+- PR14 promotion type has the highest number of uses by customers over the past 7 days. On average, the number of PR14 promotion was used per day is approximately 13,000 in counts.
+And the second most used promotion type is PR09, which only accounts for almost 300 uses per day. Between the two most popular promotion types, there is a significant jump of uses, however, both promotions are consistent in the number of uses by consumers throughout the 7 days.
+
+
+*Lesson learned and recommendation*
+- Promotion has a significant impact on sales of a business. 
+- Various promotion types are served for different purposes of buying of customers and they are neccessary to keep a business on track.
+
+
+
+**Total sales obtained over 7-day period by PR14 promotion type.**
+![img4](GitImage/PR14over17days.png)
 
 
